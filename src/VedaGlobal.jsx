@@ -1,6 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import "./VedaGlobal.css";
 
 const VedaGlobal = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [quoteOpen, setQuoteOpen] = useState(false);
+
   useEffect(() => {
     const gsapScript = document.createElement("script");
     gsapScript.src =
@@ -18,91 +22,103 @@ const VedaGlobal = () => {
       if (window.gsap) {
         const gsap = window.gsap;
         const { ScrollTrigger } = window;
-
         gsap.registerPlugin(ScrollTrigger);
 
-        // ✅ Page4 slideshow effect
-        const images = document.querySelectorAll(".page4 .slide-img");
+        // Capsule loader animation
+        const tl = gsap.timeline();
+        tl.to(".loading", { width: "100%", duration: 0.7, delay: 0.3 })
+          .to(".capsuleLogo", { scale: 2, duration: 0.5, opacity: 0 }, "a")
+          .to(".capsul", { clipPath: "inset(0% 0% 0% 0%)" }, "a");
 
-        let tl = gsap.timeline({
+        // Background zoom
+        gsap.timeline({
+          scrollTrigger: {
+            trigger: ".page1",
+            start: "90% 80%",
+            end: "155% 80%",
+            scrub: true,
+          },
+        }).to("#bgImage", { scale: 1.05 });
+
+        // Page4 slideshow with text
+        const slides = gsap.utils.toArray(".slide");
+        let slideTl = gsap.timeline({
           scrollTrigger: {
             trigger: ".page4",
             start: "top top",
-            end: "+=6000", // adjust for longer/shorter scroll
+            end: "+=6000",
             scrub: true,
             pin: true,
           },
         });
 
-        images.forEach((img, i) => {
-          tl.to(img, { opacity: 1, duration: 0.1 }, i)
-            .to(img, { opacity: 0, duration: 0.5 }, i + 0.9);
+        slides.forEach((slide, i) => {
+          const img = slide.querySelector(".slide-img");
+          const text = slide.querySelector(".slide-text");
+
+          slideTl
+            .to([img, text], { opacity: 1, duration: 0.5 }, i)
+            .to([img, text], { opacity: 0, duration: 0.5 }, i + 0.9);
         });
+
       }
     };
-
-    // ✅ Menu toggle
-    const menuOverlay = document.getElementById("menuOverlay");
-    document.getElementById("openMenu")?.addEventListener("click", () => {
-      menuOverlay.classList.remove("hidden");
-    });
-    document.getElementById("closeMenu")?.addEventListener("click", () => {
-      menuOverlay.classList.add("hidden");
-    });
-
-    // ✅ Quote modal toggle
-    const modal = document.getElementById("quoteModal");
-    document.getElementById("openQuote")?.addEventListener("click", () => {
-      modal.classList.remove("hidden");
-      modal.classList.add("flex");
-    });
-    document.getElementById("closeQuote")?.addEventListener("click", () => {
-      modal.classList.add("hidden");
-    });
   }, []);
 
   return (
     <div id="smooth-wrapper">
       <div id="smooth-content" className="font-sans text-gray-900">
         {/* Page 1 */}
-        <div className="relative h-screen flex flex-col justify-between">
-          {/* Background */}
-          <img
-            id="bgImage"
-            src="./images/ship.jpg"
-            alt="Ship"
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/50"></div>
-
-          {/* Top */}
-          <div className="relative z-10 flex items-center justify-between p-6">
-            <h1 className="text-white text-4xl font-bold">Veda Global</h1>
-            <button
-              id="openQuote"
-              className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              Get Quote <i className="ri-arrow-right-up-line"></i>
-            </button>
+        <div className="page1 relative h-screen flex flex-col justify-between overflow-hidden">
+          {/* Capsule Loader */}
+          <div className="capsuleBox">
+            <div className="capsuleLogo">
+              <h1>Veda Global</h1>
+              <div className="loading"></div>
+            </div>
           </div>
 
-          {/* Bottom */}
-          <div className="relative z-10 flex flex-col items-center text-center gap-4 p-6">
-            <h3 className="text-white text-2xl font-semibold">
-              Premium Indian Spices and Honey, Delivered Globally
-            </h3>
-            <button
-              id="openMenu"
-              className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              Menu <i className="ri-menu-fill"></i>
-            </button>
-            <h4 className="text-white text-lg max-w-2xl">
-              Delivering premium Indian spices and honey with integrity
-              worldwide.
-            </h4>
+          {/* Background */}
+          <div className="capsul bg-transparent relative flex flex-col h-full">
+            <img
+              id="bgImage"
+              src="./images/ship.jpg"
+              alt="Ship"
+              className="absolute inset-0 w-full h-full object-cover z-0"
+            />
+            <div className="absolute inset-0 bg-black/50 z-10"></div>
+
+            {/* Top Bar */}
+            <div className="relative z-20 flex items-center justify-between p-6">
+              <h1 className="text-white text-4xl md:text-6xl font-bold z-20">
+                Veda Global
+              </h1>
+              <button
+                onClick={() => setQuoteOpen(true)}
+                className="bg-white hover:bg-white text-black px-4 py-2 rounded-lg flex items-center gap-2 z-20 relative"
+              >
+                Get Quote <i className="ri-arrow-right-up-line"></i>
+              </button>
+            </div>
+
+            {/* Bottom Section */}
+            <div className="relative z-20 flex flex-col items-center text-center gap-4 p-6 mt-auto">
+              <h3 className="text-white text-2xl font-semibold z-20">
+                Premium Indian Spices and Honey, Delivered Globally
+              </h3>
+              <button
+                onClick={() => setMenuOpen(true)}
+                className="bg-white/20 hover:bg-white/30 text-white px-4 py-2 rounded-lg flex items-center gap-2 z-20 relative"
+              >
+                Menu <i className="ri-menu-fill"></i>
+              </button>
+              <h4 className="text-white text-lg max-w-2xl z-20">
+                Delivering premium Indian spices and honey with integrity worldwide.
+              </h4>
+            </div>
           </div>
         </div>
+
 
         {/* Page 2 */}
         <div className="page2 bg-white py-20 px-6 text-center">
@@ -134,210 +150,257 @@ const VedaGlobal = () => {
               and trust.
             </p>
           </div>
-          <div className="mt-12 text-center">
-            <h2 className="text-3xl font-bold">Choose us</h2>
-            <h2 className="text-2xl font-semibold mt-2">
-              The Best in the Business
+        </div>
+
+        {/* Page 4 Slideshow */}
+        <div className="page4 relative h-screen flex items-center justify-center text-white overflow-hidden">
+          {/* Slide 1 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/honey.jpg"
+              alt="Honey"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Premium Honey
             </h2>
-            <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-              Our commitment to quality and sustainability ensures that every
-              product reflects the true essence of nature, making your culinary
-              journey exceptional and memorable.
-            </p>
+          </div>
+
+          {/* Slide 2 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/greenchilli.jpg"
+              alt="Green Chilli"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Fresh Green Chilli
+            </h2>
+          </div>
+
+          {/* Slide 3 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/onion.jpg"
+              alt="Onion"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Organic Onions
+            </h2>
+          </div>
+
+          {/* Slide 4 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/coconut.jpg"
+              alt="Coconut"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Natural Coconuts
+            </h2>
+          </div>
+
+          {/* Slide 5 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/redchilli.jpg"
+              alt="Red Chilli"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Red Chilli
+            </h2>
+          </div>
+
+          {/* Slide 6 */}
+          <div className="slide absolute inset-0 w-full h-full flex items-center justify-center">
+            <img
+              src="./images/cardamom.jpg"
+              alt="Cardamom"
+              className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
+            />
+            <h2 className="slide-text absolute text-4xl md:text-6xl font-bold drop-shadow-lg opacity-0">
+              Finest Cardamom
+            </h2>
           </div>
         </div>
 
-        {/* Page 4 - Slideshow */}
-        <div className="page4 relative h-screen flex items-center justify-center bg-black text-white overflow-hidden">
-          {/* Images for slideshow */}
-          <img
-            src="./images/honey.jpg"
-            alt="Honey"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-          <img
-            src="./images/greenchilli.jpg"
-            alt="Green Chilli"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-          <img
-            src="./images/onion.jpg"
-            alt="Onion"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-          <img
-            src="./images/coconut.jpg"
-            alt="Coconut"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-          <img
-            src="./images/redchilli.jpg"
-            alt="Red Chilli"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-          <img
-            src="./images/cardamom.jpg"
-            alt="Cardamom"
-            className="slide-img absolute inset-0 w-full h-full object-cover opacity-0"
-          />
-        </div>
 
-        {/* ✅ Page 5 - Contact Us */}
-        <div
-          id="contact"
-          className="page5 bg-gray-100 py-20 px-6 text-center min-h-screen flex flex-col justify-center"
-        >
-          <h2 className="text-4xl font-bold text-gray-800 mb-6">
-            📩 Contact Us
-          </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Have questions or need a quote? Get in touch with us today.
-          </p>
-
-          <form className="max-w-2xl mx-auto space-y-4 bg-white shadow-lg p-8 rounded-2xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Name"
-                className="w-full border rounded-lg px-4 py-2"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-full border rounded-lg px-4 py-2"
-              />
-            </div>
+        {/* Contact Form */}
+        <div className="contact py-20 px-6 bg-white text-center">
+          <h2 className="text-3xl font-bold mb-6"> Contact Us</h2>
+          <form className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-left">
+            <input
+              type="text"
+              placeholder="Your Name"
+              className="border rounded-lg px-3 py-2 w-full"
+            />
+            <input
+              type="email"
+              placeholder="Your Email"
+              className="border rounded-lg px-3 py-2 w-full"
+            />
             <input
               type="text"
               placeholder="Subject"
-              className="w-full border rounded-lg px-4 py-2"
+              className="border rounded-lg px-3 py-2 w-full md:col-span-2"
             />
             <textarea
-              rows="5"
-              placeholder="Message"
-              className="w-full border rounded-lg px-4 py-2"
+              placeholder="Your Message"
+              rows="4"
+              className="border rounded-lg px-3 py-2 w-full md:col-span-2"
             ></textarea>
-            <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-3 rounded-lg">
+            <button className="bg-blue-400 hover:bg-blue-500 text-black font-semibold py-2 rounded-lg md:col-span-2">
               Send Message
             </button>
           </form>
         </div>
+
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-10 px-6" id="footer">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10 footer-container">
+
+            {/* About */}
+            <div className="footer-about">
+              <h2 className="text-2xl font-bold mb-4">Veda Global</h2>
+              <p className="text-gray-400">
+                Premium Indian Spices & Honey, Delivered Worldwide with Integrity.
+              </p>
+            </div>
+
+            {/* Quick Links */}
+            <div className="footer-links">
+              <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
+              <ul className="space-y-2">
+                <li><a href="#home" className="hover:text-blue-400">🏠 Home</a></li>
+                <li><a href="#about" className="hover:text-blue-400">ℹ About</a></li>
+                <li><a href="#products" className="hover:text-blue-400">🌿 Products</a></li>
+                <li><a href="#quality" className="hover:text-blue-400">✅ Quality</a></li>
+                <li><a href="#contact" className="hover:text-blue-400">📩 Contact</a></li>
+              </ul>
+            </div>
+
+            {/* Contact */}
+            <div className="footer-contact">
+              <h3 className="text-xl font-semibold mb-4">Contact Us</h3>
+              <p className="text-gray-400 flex items-center gap-2">
+                <i className="ri-mail-line"></i> info@vedaglobal.com
+              </p>
+              <p className="text-gray-400 flex items-center gap-2">
+                <i className="ri-phone-line"></i> +91 98765 43210
+              </p>
+              <p className="text-gray-400 flex items-center gap-2">
+                <i className="ri-map-pin-line"></i> Mumbai, India
+              </p>
+
+              {/* Social Icons */}
+              <div className="flex gap-4 mt-4 text-2xl social-icons">
+                <a href="#" className="hover:text-blue-400"><i className="ri-facebook-fill"></i></a>
+                <a href="#" className="hover:text-pink-400"><i className="ri-instagram-line"></i></a>
+                <a href="#" className="hover:text-blue-600"><i className="ri-linkedin-box-fill"></i></a>
+                <a href="#" className="hover:text-sky-400"><i className="ri-twitter-x-line"></i></a>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom */}
+          <div className="footer-bottom mt-10 border-t border-gray-700 pt-6 text-center">
+            <p className="text-gray-400">© 2025 Veda Global. All Rights Reserved.</p>
+          </div>
+        </footer>
+
       </div>
 
-      {/* Modal */}
-      <div
-        id="quoteModal"
-        className="fixed inset-0 hidden items-center justify-center bg-black/50 z-50"
-      >
-        <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6 relative">
-          <button
-            id="closeQuote"
-            className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700"
-          >
-            &times;
-          </button>
-          <h2 className="text-2xl font-bold text-center mb-2">
-            🚢 Get Your Free Quote!
-          </h2>
-          <p className="text-center text-gray-600 mb-6">
-            Fill in your details and our team will reach out soon.
-          </p>
-          <form className="space-y-4">
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="Name"
-                className="w-1/2 border rounded-lg px-3 py-2"
-              />
-              <input
-                type="email"
-                placeholder="Email"
-                className="w-1/2 border rounded-lg px-3 py-2"
-              />
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="number"
-                placeholder="Phone"
-                className="w-1/2 border rounded-lg px-3 py-2"
-              />
-              <select className="w-1/2 border rounded-lg px-3 py-2">
-                <option>Country</option>
-                <option>India</option>
-                <option>USA</option>
-                <option>UK</option>
-              </select>
-            </div>
-            <div className="flex gap-3">
-              <input
-                type="text"
-                placeholder="Company"
-                className="w-1/2 border rounded-lg px-3 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Quantity"
-                className="w-1/2 border rounded-lg px-3 py-2"
-              />
-            </div>
-            <textarea
-              placeholder="Message"
-              rows="3"
-              className="w-full border rounded-lg px-3 py-2"
-            ></textarea>
-            <button className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-semibold py-2 rounded-lg">
-              Submit Request
+      {/* Quote Modal */}
+      {quoteOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-4xl shadow-lg w-full max-w-lg p-8 relative">
+            <button
+              onClick={() => setQuoteOpen(false)}
+              className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-gray-700"
+            >
+              &times;
             </button>
-          </form>
+            <h2 className="text-2xl font-bold text-center mb-2">
+              🚢 Get Your Free Quote!
+            </h2>
+            <p className="text-center text-gray-600 mb-6">
+              Fill in your details and our team will reach out soon.
+            </p>
+            <form className="space-y-4">
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Name"
+                  className="w-1/2 border rounded-lg px-3 py-2"
+                />
+                <input
+                  type="email"
+                  placeholder="Email"
+                  className="w-1/2 border rounded-lg px-3 py-2"
+                />
+              </div>
+              <div className="flex gap-3">
+                <input
+                  type="number"
+                  placeholder="Phone"
+                  className="w-1/2 border rounded-lg px-3 py-2"
+                />
+                <select className="w-1/2 border rounded-lg px-3 py-2">
+                  <option>Country</option>
+                  <option>India</option>
+                  <option>USA</option>
+                  <option>UK</option>
+                </select>
+              </div>
+              <div className="flex gap-3">
+                <input
+                  type="text"
+                  placeholder="Company"
+                  className="w-1/2 border rounded-lg px-3 py-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Quantity"
+                  className="w-1/2 border rounded-lg px-3 py-2"
+                />
+              </div>
+              <textarea
+                placeholder="Message"
+                rows="3"
+                className="w-full border rounded-lg px-3 py-2"
+              ></textarea>
+              <button className="w-full bg-blue-400 hover:bg-blue-500 text-black font-bold py-2 rounded-lg">
+                Submit Request
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Overlay Menu */}
-      <div
-        id="menuOverlay"
-        className="fixed inset-0 hidden bg-black/70 z-50 flex items-center justify-center"
-      >
-        <div className="bg-white rounded-xl shadow-lg p-8 relative w-80">
-          <button
-            id="closeMenu"
-            className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
-          >
-            &times;
-          </button>
-          <ul className="space-y-4 text-lg font-medium">
-            <li>
-              <a href="#home" className="hover:text-yellow-500">
-                🏠 Home
-              </a>
-            </li>
-            <li>
-              <a href="#about" className="hover:text-yellow-500">
-                ℹ️ About Us
-              </a>
-            </li>
-            <li>
-              <a href="#products" className="hover:text-yellow-500">
-                🌿 Products
-              </a>
-            </li>
-            <li>
-              <a href="#quality" className="hover:text-yellow-500">
-                ✅ Quality Standards
-              </a>
-            </li>
-            <li>
-              <a href="#contact" className="hover:text-yellow-500">
-                📩 Contact Us
-              </a>
-            </li>
-            <li>
-              <a href="#quote" className="hover:text-yellow-500">
-                💬 Get a Quote
-              </a>
-            </li>
-          </ul>
+      {menuOpen && (
+        <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-xl shadow-lg p-8 relative w-80">
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="absolute top-4 right-4 text-2xl text-gray-600 hover:text-gray-800"
+            >
+              &times;
+            </button>
+            <ul className="space-y-4 text-lg font-medium">
+              <li>🏠 Home</li>
+              <li>ℹ️ About Us</li>
+              <li>🌿 Products</li>
+              <li>✅ Quality Standards</li>
+              <li>📩 Contact Us</li>
+              <li>💬 Get a Quote</li>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
