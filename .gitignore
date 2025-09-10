@@ -1,1 +1,5 @@
-/node_modules
+client/.gitignore
+
+
+Api/node_modules/
+Api/.env
