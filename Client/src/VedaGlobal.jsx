@@ -1,9 +1,79 @@
 import React, { useEffect, useState } from "react";
 import "./VedaGlobal.css";
+import axiosInstance from "./Axiosconfig";
 
 const VedaGlobal = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [quoteOpen, setQuoteOpen] = useState(false);
+
+  const [form, setForm] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+    console.log(form,e.target.value)
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await axiosInstance.post('/contact/create', form);
+      
+      setForm({ name: '', email: '', subject: '', message: '' });
+      alert(res.data.message || 'message sent successfully!');
+    } catch (e) {
+      console.log(e)
+      const errorMessage = e.response?.data?.error || 'Something went wrong. Please try again.';
+    alert(errorMessage);
+    }
+  };
+
+  const [quoteForm, setQuoteForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    country: '',
+    company: '',
+    quantity: '',
+    message: ''
+  });
+
+  const handleQuoteChange = (e) => {
+    setQuoteForm({ ...quoteForm, [e.target.name]: e.target.value });
+  };
+
+  const handleQuoteSubmit = async (e) => {
+    e.preventDefault();
+  
+    try {
+      const res = await axiosInstance.post('/quote/create', quoteForm);
+      alert(res.data.message || 'Quote request submitted successfully!');
+      setQuoteForm({
+        name: '',
+        email: '',
+        phone: '',
+        country: '',
+        company: '',
+        quantity: '',
+        message: ''
+      });
+      alert('request sent successfully!');
+      setQuoteOpen(false); // Close modal after success
+    } catch (error) {
+      console.error(error);
+      const errMsg = error.response?.data?.error || 'Failed to submit quote. Try again.';
+      alert(errMsg);
+    }
+  };
+  
+  
+
+
 
   useEffect(() => {
     const gsapScript = document.createElement("script");
@@ -64,6 +134,10 @@ const VedaGlobal = () => {
       }
     };
   }, []);
+
+
+
+
 
   return (
     <div id="smooth-wrapper">
@@ -231,28 +305,40 @@ const VedaGlobal = () => {
         {/* Contact Form */}
         <div className="contact py-20 px-6 bg-white text-center">
           <h2 className="text-3xl font-bold mb-6"> Contact Us</h2>
-          <form className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-left">
+          <form  onSubmit={handleSubmit} className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-left">
             <input
               type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
               placeholder="Your Name"
               className="border rounded-lg px-3 py-2 w-full"
             />
             <input
               type="email"
+              name="email"
               placeholder="Your Email"
+              value={form.email}
+              onChange={handleChange}
               className="border rounded-lg px-3 py-2 w-full"
             />
             <input
               type="text"
+              name="subject"
+              value={form.subject}
+              onChange={handleChange}
               placeholder="Subject"
               className="border rounded-lg px-3 py-2 w-full md:col-span-2"
             />
             <textarea
               placeholder="Your Message"
+               name="message"
               rows="4"
+              value={form.message}
+          onChange={handleChange}
               className="border rounded-lg px-3 py-2 w-full md:col-span-2"
             ></textarea>
-            <button className="bg-blue-400 hover:bg-blue-500 text-black font-semibold py-2 rounded-lg md:col-span-2">
+            <button type="submit" className="bg-blue-400 hover:bg-blue-500 text-black font-semibold py-2 rounded-lg md:col-span-2">
               Send Message
             </button>
           </form>
@@ -329,16 +415,22 @@ const VedaGlobal = () => {
             <p className="text-center text-gray-600 mb-6">
               Fill in your details and our team will reach out soon.
             </p>
-            <form className="space-y-4">
+            <form onSubmit={handleQuoteSubmit} className="space-y-4">
               <div className="flex gap-3">
                 <input
                   type="text"
                   placeholder="Name"
+                  name="name"
+      value={quoteForm.name}
+      onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
                 <input
                   type="email"
                   placeholder="Email"
+                  name="email"
+      value={quoteForm.email}
+      onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
               </div>
@@ -346,9 +438,16 @@ const VedaGlobal = () => {
                 <input
                   type="number"
                   placeholder="Phone"
+                  name="phone"
+                  value={quoteForm.phone}
+                  onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
-                <select className="w-1/2 border rounded-lg px-3 py-2">
+                <select
+                 name="country"
+                 value={quoteForm.country}
+                 onChange={handleQuoteChange}
+                className="w-1/2 border rounded-lg px-3 py-2">
                   <option>Country</option>
                   <option>India</option>
                   <option>USA</option>
@@ -359,20 +458,29 @@ const VedaGlobal = () => {
                 <input
                   type="text"
                   placeholder="Company"
+                  name="company"
+                  value={quoteForm.company}
+                  onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
                 <input
                   type="text"
                   placeholder="Quantity"
+                  name="quantity"
+      value={quoteForm.quantity}
+      onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
               </div>
               <textarea
                 placeholder="Message"
                 rows="3"
+                name="message"
+    value={quoteForm.message}
+    onChange={handleQuoteChange}
                 className="w-full border rounded-lg px-3 py-2"
               ></textarea>
-              <button className="w-full bg-blue-400 hover:bg-blue-500 text-black font-bold py-2 rounded-lg">
+              <button type="submit" className="w-full bg-blue-400 hover:bg-blue-500 text-black font-bold py-2 rounded-lg">
                 Submit Request
               </button>
             </form>
