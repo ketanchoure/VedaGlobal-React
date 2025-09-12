@@ -15,7 +15,7 @@ const VedaGlobal = () => {
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    console.log(form,e.target.value)
+    console.log(form, e.target.value)
   };
 
   const handleSubmit = async (e) => {
@@ -23,13 +23,13 @@ const VedaGlobal = () => {
 
     try {
       const res = await axiosInstance.post('/contact/create', form);
-      
+
       setForm({ name: '', email: '', subject: '', message: '' });
       alert(res.data.message || 'message sent successfully!');
     } catch (e) {
       console.log(e)
       const errorMessage = e.response?.data?.error || 'Something went wrong. Please try again.';
-    alert(errorMessage);
+      alert(errorMessage);
     }
   };
 
@@ -49,7 +49,7 @@ const VedaGlobal = () => {
 
   const handleQuoteSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
       const res = await axiosInstance.post('/quote/create', quoteForm);
       alert(res.data.message || 'Quote request submitted successfully!');
@@ -70,8 +70,8 @@ const VedaGlobal = () => {
       alert(errMsg);
     }
   };
-  
-  
+
+
 
 
 
@@ -204,7 +204,7 @@ const VedaGlobal = () => {
         </div>
 
         {/* Page 3 */}
-        <div className="page3 py-20 px-6 bg-gray-50">
+        <div id="products" className="page3 py-20 px-6 bg-gray-50">
           <div className="grid md:grid-cols-2 gap-6 items-center">
             <div className="flex gap-4">
               <img
@@ -303,9 +303,9 @@ const VedaGlobal = () => {
 
 
         {/* Contact Form */}
-        <div className="contact py-20 px-6 bg-white text-center">
+        <div id="contact" className="contact py-20 px-6 bg-white text-center">
           <h2 className="text-3xl font-bold mb-6"> Contact Us</h2>
-          <form  onSubmit={handleSubmit} className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-left">
+          <form onSubmit={handleSubmit} className="max-w-3xl mx-auto grid md:grid-cols-2 gap-6 text-left">
             <input
               type="text"
               name="name"
@@ -332,10 +332,10 @@ const VedaGlobal = () => {
             />
             <textarea
               placeholder="Your Message"
-               name="message"
+              name="message"
               rows="4"
               value={form.message}
-          onChange={handleChange}
+              onChange={handleChange}
               className="border rounded-lg px-3 py-2 w-full md:col-span-2"
             ></textarea>
             <button type="submit" className="bg-blue-400 hover:bg-blue-500 text-black font-semibold py-2 rounded-lg md:col-span-2">
@@ -357,16 +357,86 @@ const VedaGlobal = () => {
             </div>
 
             {/* Quick Links */}
+            {/* Quick Links */}
             <div className="footer-links">
               <h3 className="text-xl font-semibold mb-4">Quick Links</h3>
               <ul className="space-y-2">
-                <li><a href="#home" className="hover:text-blue-400">🏠 Home</a></li>
-                <li><a href="#about" className="hover:text-blue-400">ℹ About</a></li>
-                <li><a href="#products" className="hover:text-blue-400">🌿 Products</a></li>
-                <li><a href="#quality" className="hover:text-blue-400">✅ Quality</a></li>
-                <li><a href="#contact" className="hover:text-blue-400">📩 Contact</a></li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-blue-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
+                  >
+                    🏠 Home
+                  </a>
+                </li>
+                {/* <li>
+                  <a
+                    href="#"
+                    className="hover:text-blue-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    ℹ About
+                  </a>
+                </li> */}
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-blue-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    🌿 Products
+                  </a>
+                </li>
+                {/* <li>
+                  <a
+                    href="#"
+                    className="hover:text-blue-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("quality")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    ✅ Quality
+                  </a>
+                </li> */}
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-blue-400"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                    }}
+                  >
+                    📩 Contact
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setMenuOpen(false);
+                      setQuoteOpen(true);
+
+                    }}
+                  >
+                    💬 Get a Quote
+                  </a>
+                </li>
               </ul>
             </div>
+
 
             {/* Contact */}
             <div className="footer-contact">
@@ -421,16 +491,16 @@ const VedaGlobal = () => {
                   type="text"
                   placeholder="Name"
                   name="name"
-      value={quoteForm.name}
-      onChange={handleQuoteChange}
+                  value={quoteForm.name}
+                  onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
                 <input
                   type="email"
                   placeholder="Email"
                   name="email"
-      value={quoteForm.email}
-      onChange={handleQuoteChange}
+                  value={quoteForm.email}
+                  onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
               </div>
@@ -444,10 +514,10 @@ const VedaGlobal = () => {
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
                 <select
-                 name="country"
-                 value={quoteForm.country}
-                 onChange={handleQuoteChange}
-                className="w-1/2 border rounded-lg px-3 py-2">
+                  name="country"
+                  value={quoteForm.country}
+                  onChange={handleQuoteChange}
+                  className="w-1/2 border rounded-lg px-3 py-2">
                   <option>Country</option>
                   <option>India</option>
                   <option>USA</option>
@@ -467,8 +537,8 @@ const VedaGlobal = () => {
                   type="text"
                   placeholder="Quantity"
                   name="quantity"
-      value={quoteForm.quantity}
-      onChange={handleQuoteChange}
+                  value={quoteForm.quantity}
+                  onChange={handleQuoteChange}
                   className="w-1/2 border rounded-lg px-3 py-2"
                 />
               </div>
@@ -476,8 +546,8 @@ const VedaGlobal = () => {
                 placeholder="Message"
                 rows="3"
                 name="message"
-    value={quoteForm.message}
-    onChange={handleQuoteChange}
+                value={quoteForm.message}
+                onChange={handleQuoteChange}
                 className="w-full border rounded-lg px-3 py-2"
               ></textarea>
               <button type="submit" className="w-full bg-blue-400 hover:bg-blue-500 text-black font-bold py-2 rounded-lg">
@@ -499,13 +569,81 @@ const VedaGlobal = () => {
               &times;
             </button>
             <ul className="space-y-4 text-lg font-medium">
-              <li>🏠 Home</li>
-              <li>ℹ️ About Us</li>
-              <li>🌿 Products</li>
-              <li>✅ Quality Standards</li>
-              <li>📩 Contact Us</li>
-              <li>💬 Get a Quote</li>
+              <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                >
+                  🏠 Home
+                </a>
+              </li>
+              {/* <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    document.getElementById("about")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  ℹ️ About Us
+                </a>
+              </li> */}
+              <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    document.getElementById("products")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  🌿 Products
+                </a>
+              </li>
+              {/* <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    document.getElementById("quality")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  ✅ Quality Standards
+                </a>
+              </li> */}
+              <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  📩 Contact Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setMenuOpen(false);
+                    setQuoteOpen(true);
+
+                  }}
+                >
+                  💬 Get a Quote
+                </a>
+              </li>
             </ul>
+
           </div>
         </div>
       )}
